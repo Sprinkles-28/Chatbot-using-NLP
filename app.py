@@ -30,19 +30,67 @@ for intent in intents:
         tags.append(intent['tag'])
         patterns.append(pattern)
 
-# training the model
+# Training the model
 x = vectorizer.fit_transform(patterns)
 y = tags
 clf.fit(x, y)
 
+# Arithmetic operations handler
+def handle_arithmetic(command):
+    command = command.lower().strip()
+    if "add" in command:
+        numbers = extract_numbers(command)
+        return f"The result of addition is: {sum(numbers)}"
+    elif "subtract" in command:
+        numbers = extract_numbers(command)
+        result = numbers[0] - sum(numbers[1:])
+        return f"The result of subtraction is: {result}"
+    elif "multiply" in command:
+        numbers = extract_numbers(command)
+        result = 1
+        for num in numbers:
+            result *= num
+        return f"The result of multiplication is: {result}"
+    elif "divide" in command:
+        numbers = extract_numbers(command)
+        if len(numbers) != 2:
+            return "Division requires exactly two numbers."
+        if numbers[1] == 0:
+            return "Cannot divide by zero."
+        return f"The result of division is: {numbers[0] / numbers[1]}"
+    else:
+        return "Invalid operation. Please use add, subtract, multiply, or divide."
+
+# Extract numbers from the user input
+def extract_numbers(command):
+    words = command.split()
+    numbers = []
+    for word in words:
+        try:
+            numbers.append(float(word))
+        except ValueError:
+            continue
+    if len(numbers) < 1:
+        raise ValueError("No numbers found. Please provide numbers in your command.")
+    return numbers
+
+# Chatbot function
 def chatbot(input_text):
+    # Check if the user input contains an arithmetic command
+    if any(op in input_text.lower() for op in ["add", "subtract", "multiply", "divide"]):
+        try:
+            return handle_arithmetic(input_text)
+        except ValueError as e:
+            return str(e)
+    # Use intent-based responses
     input_text = vectorizer.transform([input_text])
     tag = clf.predict(input_text)[0]
     for intent in intents:
         if intent['tag'] == tag:
             response = random.choice(intent['responses'])
             return response
-        
+
+# Counter for unique keys in Streamlit
 counter = 0
 
 def main():
@@ -67,7 +115,6 @@ def main():
         user_input = st.text_input("You:", key=f"user_input_{counter}")
 
         if user_input:
-
             # Convert the user input to a string
             user_input_str = str(user_input)
 
@@ -90,7 +137,6 @@ def main():
     elif choice == "Conversation History":
         # Display the conversation history in a collapsible expander
         st.header("Conversation History")
-        # with st.beta_expander("Click to see Conversation History"):
         with open('chat_log.csv', 'r', encoding='utf-8') as csvfile:
             csv_reader = csv.reader(csvfile)
             next(csv_reader)  # Skip the header row
@@ -101,32 +147,7 @@ def main():
                 st.markdown("---")
 
     elif choice == "About":
-        st.write("The goal of this project is to create a chatbot that can understand and respond to user input based on intents. The chatbot is built using Natural Language Processing (NLP) library and Logistic Regression, to extract the intents and entities from user input. The chatbot is built using Streamlit, a Python library for building interactive web applications.")
-
-        st.subheader("Project Overview:")
-
-        st.write("""
-        The project is divided into two parts:
-        1. NLP techniques and Logistic Regression algorithm is used to train the chatbot on labeled intents and entities.
-        2. For building the Chatbot interface, Streamlit web framework is used to build a web-based chatbot interface. The interface allows users to input text and receive responses from the chatbot.
-        """)
-
-        st.subheader("Dataset:")
-
-        st.write("""
-        The dataset used in this project is a collection of labelled intents and entities. The data is stored in a list.
-        - Intents: The intent of the user input (e.g. "greeting", "budget", "about")
-        - Entities: The entities extracted from user input (e.g. "Hi", "How do I create a budget?", "What is your purpose?")
-        - Text: The user input text.
-        """)
-
-        st.subheader("Streamlit Chatbot Interface:")
-
-        st.write("The chatbot interface is built using Streamlit. The interface includes a text input box for users to input their text and a chat window to display the chatbot's responses. The interface uses the trained model to generate responses to user input.")
-
-        st.subheader("Conclusion:")
-
-        st.write("In this project, a chatbot is built that can understand and respond to user input based on intents. The chatbot was trained using NLP and Logistic Regression, and the interface was built using Streamlit. This project can be extended by adding more data, using more sophisticated NLP techniques, deep learning algorithms.")
+        st.write("The goal of this project is to create a chatbot that can understand and respond to user input based on intents. The chatbot is built using Natural Language Processing (NLP) library and Logistic Regression, to extract the intents and entities from user input. The chatbot is built using Streamlit, a Python library for building interactive web applications. For this project, I've also added basic arithmetic functionalities for calculations.")
 
 if __name__ == '__main__':
     main()

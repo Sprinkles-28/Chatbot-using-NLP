@@ -17,6 +17,33 @@
         ]
     },
     {
+        "tag": "math_operations",
+        "patterns": [
+          "Can you do math?",
+          "Solve this math problem for me",
+          "Do some calculations"
+        ],
+        "responses": [
+          "Sure! Type your operation, and I'll calculate it.",
+          "Of course, give me the numbers or operation to solve."
+        ]
+      },
+          {
+            "tag": "calculation",
+            "patterns": [
+              "Calculate 5 + 3",
+              "What is 15 divided by 3?",
+              "Solve 7 * 8",
+              "Add 12 and 34",
+              "What is 9 minus 5?"
+            ],
+            "responses": [
+              "Let me calculate that for you!",
+              "Sure, solving it now.",
+              "Calculating..."
+            ]
+          },
+    {
         "tag": "goodbye",
         "patterns": [
             "Bye",
